@@ -1,0 +1,102 @@
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company: 
+// Engineer: 
+// 
+// Create Date: 11/11/2023 01:18:20 PM
+// Design Name: 
+// Module Name: Comparator
+// Project Name: 
+// Target Devices: 
+// Tool Versions: 
+// Description: 
+// 
+// Dependencies: 
+// 
+// Revision:
+// Revision 0.01 - File Created
+// Additional Comments:
+// 
+//////////////////////////////////////////////////////////////////////////////////
+
+
+module Comparator(
+    input signed [31:0] Rs,
+    input signed [31:0] Rt,
+    input [31:0] Instruction,
+    output reg branch
+    );
+    
+    parameter BEQ = 6'b000100; //function code
+    parameter BNE = 6'b000101; //opcode
+    parameter BLTZ = 5'b00000; //opcode **have the same opcode different instruction 20:16
+    parameter BGEZ = 5'b00001; //opcode **have the same opcode different instruction 20:16
+    parameter BGTZ = 6'b000111; //opcode
+    parameter BLEZ = 6'b000110; //opcode
+    
+    wire [5:0] Opcode = Instruction [31:26];
+    wire [4:0] Rt_Field = Instruction[20:16];
+    
+    always @(Rs, Rt) begin
+        case (Opcode)
+            6'b1: begin
+                case (Rt_Field)
+                    BLTZ: begin
+                        if (Rs < 0) begin
+                            branch <= 1;
+                        end 
+                        else begin
+                            branch <= 0;
+                        end 
+                    end 
+                    BGEZ: begin
+                        if (Rs >= 0) begin
+                            branch <= 1;
+                        end 
+                        else begin
+                            branch <= 0;
+                        end
+                    end 
+                    default: begin
+                        branch <= 0;
+                    end
+                 endcase
+              end
+              BEQ: begin
+                if (Rs == Rt) begin
+                    branch <= 1;
+                end
+                else begin
+                    branch <= 0;
+                end
+             end
+             BNE: begin
+                if (Rs != Rt) begin
+                    branch <= 1;
+                end
+                else begin
+                    branch <= 0;
+                end
+             end
+             BGTZ: begin
+                if (Rs > 0) begin
+                    branch <= 1;
+                end
+                else begin
+                    branch <= 0;
+                end
+             end 
+             BLEZ: begin
+                if (Rs <= 0) begin
+                    branch <= 1;
+                end
+                else begin
+                    branch <= 0;
+                end
+             end 
+             default: begin
+                    branch <= 0;
+             end
+          endcase
+       end 
+endmodule
